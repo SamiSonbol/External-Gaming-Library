@@ -52,7 +52,7 @@ int main() {
 		//window drawing logic
 		window.clear(sf::Color::Black);
 
-		UI.RENDER(dt);
+		UI.RENDER(dt, &window);
 
 		window.display();
 

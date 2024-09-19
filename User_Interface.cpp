@@ -2,8 +2,6 @@
 
 void User_Interface::set_window(sf::RenderWindow* window) {
 
-	this->window.reset(window);
-
 	sf::WindowHandle wHandle;
 	wHandle = window->getSystemHandle();
 	HCURSOR Cursor = LoadCursorFromFile(L"resources\\Kunai.ani");
@@ -12,10 +10,10 @@ void User_Interface::set_window(sf::RenderWindow* window) {
 
 };
 
-void User_Interface::draw_splash_screen(const sf::Sprite& image) {
+void User_Interface::draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window) {
 
-	this->window->draw(image);
-	this->window->display();
+	window->draw(image);
+	window->display();
 
 };
 
@@ -442,8 +440,8 @@ void User_Interface::calculate_n_titles_on_screen() {
 
 	//this title_area takes the space needed for each title as double its width inorder to makeup for the bounding box and spacing between titles, and the length as the whole
 	//horizontal space where this title exists since we want our titles to be listed as one column and not stuffed in every available space on the screen.
-	float title_area = (this->games_collection[0]->size.y * 2) * this->window->getSize().x;
-	float window_area = this->window->getSize().y * this->window->getSize().x;
+	float title_area = (this->games_collection[0]->size.y * 2) * sf::VideoMode::getDesktopMode().width;
+	float window_area = sf::VideoMode::getDesktopMode().height * sf::VideoMode::getDesktopMode().width;
 
 	//here the actual formula we use is number_of_objects = area_of_whole_space / area_of_one_object. However, since in our title_area doesnt take the space of our searchbar
 	//into consederation, the screen_capacity will be +1 of the actual capacity that the screen can hold; hence, we subtract 1 from it.
@@ -542,7 +540,7 @@ void User_Interface::hover_over_buttons() {
 
 		last_mouse_pos = mouse_pos;
 
-		if (mouse_pos.x >= 0 && mouse_pos.x <= this->window->getSize().x && mouse_pos.y >= 0 && mouse_pos.y <= this->window->getSize().y) {
+		if (mouse_pos.x >= 0 && mouse_pos.x <= sf::VideoMode::getDesktopMode().width && mouse_pos.y >= 0 && mouse_pos.y <= sf::VideoMode::getDesktopMode().height) {
 
 			this->searchbar.update_buttons(this->box_color, this->chosen_outline_color, mouse_pos);
 
@@ -752,28 +750,28 @@ void User_Interface::UPDATE(const sf::Event& my_event) {
 
 };
 
-void User_Interface::render_background(Setup::Background& background, const float delta_time) {
+void User_Interface::render_background(Setup::Background& background, const float delta_time, sf::RenderWindow* window) {
 
 	this->animator.update(this->rendered_sprite, background.texture, background.spritesheet_size, background.frame_size, background.sprite_scale, delta_time);
-	this->window->draw(this->rendered_sprite);
+	window->draw(this->rendered_sprite);
 
 };
 
-void User_Interface::render_buttons(Page& page) {
+void User_Interface::render_buttons(Page& page, sf::RenderWindow* window) {
 
 	for (auto& game : page.games) {
 
-		this->window->draw(game->title.text);
+		window->draw(game->title.text);
 		if (game->title.is_selected && this->display_game_background.load()) {
 
-			this->window->draw(this->searchbar.play_button.frame);
-			this->window->draw(this->searchbar.play_button.title.text);
-			this->window->draw(game->frame);
+			window->draw(this->searchbar.play_button.frame);
+			window->draw(this->searchbar.play_button.title.text);
+			window->draw(game->frame);
 
 		}//checks if the game is selected and then draws the play button
 		else if (game->frame.getFillColor() == this->box_color) {
 
-			this->window->draw(game->frame);
+			window->draw(game->frame);
 
 		};//checks if the game is being hovered over and then draws the frame
 
@@ -781,16 +779,16 @@ void User_Interface::render_buttons(Page& page) {
 
 };
 
-void User_Interface::RENDER(const float delta_time) {
+void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 
 	if (this->display_game_background) {
 
-		render_background(this->setup_wizard.game_library[this->last_selected_title]->background, delta_time);
+		render_background(this->setup_wizard.game_library[this->last_selected_title]->background, delta_time, window);
 
 	}
 	else {
 
-		render_background(this->setup_wizard.main_background, delta_time);
+		render_background(this->setup_wizard.main_background, delta_time, window);
 
 	};
 	
@@ -800,24 +798,24 @@ void User_Interface::RENDER(const float delta_time) {
 
 		if (!this->searchbar.search_results_page.games.empty()) {
 
-			render_buttons(this->searchbar.search_results_page);
+			render_buttons(this->searchbar.search_results_page, window);
 
 		};
 
 	}
 	else {
 
-		render_buttons(this->pages[this->page_number]);
+		render_buttons(this->pages[this->page_number], window);
 
 	};
 
 	thread_lock.unlock();
 
-	this->window->draw(this->searchbar.search_box.frame);
-	this->window->draw(this->searchbar.search_box.title.text);
+	window->draw(this->searchbar.search_box.frame);
+	window->draw(this->searchbar.search_box.title.text);
 
-	this->window->draw(this->searchbar.return_button.frame);
-	this->window->draw(this->searchbar.return_button.title.text);
+	window->draw(this->searchbar.return_button.frame);
+	window->draw(this->searchbar.return_button.title.text);
 
 };
 

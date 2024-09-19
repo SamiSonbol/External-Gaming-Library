@@ -120,8 +120,6 @@ public:
 	std::atomic<int> page_number = 0;
 	std::atomic<bool> display_game_background = false;
 
-	std::unique_ptr<sf::RenderWindow> window;
-
 	sf::Font font;
 
 	Searchbar searchbar;
@@ -132,7 +130,7 @@ public:
 
 	void set_window(sf::RenderWindow* window);
 
-	void draw_splash_screen(const sf::Sprite& image);
+	void draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window);
 
 	void create_titles();
 	void calculate_n_titles_on_screen();
@@ -161,9 +159,9 @@ public:
 
 	void UPDATE(const sf::Event& my_event);
 
-	void render_background(Setup::Background& background, const float delta_time);
-	void render_buttons(Page& page);
-	void RENDER(const float delta_time);
+	void render_background(Setup::Background& background, const float delta_time, sf::RenderWindow* window);
+	void render_buttons(Page& page, sf::RenderWindow* window);
+	void RENDER(const float delta_time, sf::RenderWindow* window);
 
 	Setup setup_wizard = Setup();
 
