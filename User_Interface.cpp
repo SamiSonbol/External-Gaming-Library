@@ -1,6 +1,6 @@
 #include "User_Interface.h"
 
-void User_Interface::set_window(sf::RenderWindow* window) {
+void User_Interface::set_window(const sf::RenderWindow* window) {
 
 	sf::WindowHandle wHandle;
 	wHandle = window->getSystemHandle();
@@ -49,7 +49,7 @@ sf::Vector2f User_Interface::Button::get_position() {//this function exists only
 
 };
 
-void User_Interface::Button::turn_on(const sf::Color& fill_color, const sf::Color& outline_color, int& last_hovered_over_title) {
+void User_Interface::Button::turn_on(const sf::Color& fill_color, const sf::Color& outline_color) {
 
 	this->frame.setFillColor(fill_color);
 
@@ -58,8 +58,6 @@ void User_Interface::Button::turn_on(const sf::Color& fill_color, const sf::Colo
 	this->title.text.setOutlineColor(outline_color);
 
 	this->title.is_hovered_over = true;
-
-	last_hovered_over_title = this->title.index;
 
 };
 
@@ -97,7 +95,7 @@ void User_Interface::Button::stick_to(Button& target) {
 
 };
 
-User_Interface::Button::Button(const std::string& text, const sf::Vector2f& text_scale, const sf::Font& font, const int& frame_type) : title(text, text_scale, font) {
+User_Interface::Button::Button(const std::string& text, const sf::Vector2f& text_scale, const sf::Font& font, const int& frame_type, const std::string& exe_path, const std::string& image_path, const sf::Vector2u& spritesheet_size) : title(text, text_scale, font), executable(exe_path), image(image_path, spritesheet_size) {
 
 	switch (frame_type) {
 
@@ -156,57 +154,6 @@ User_Interface::Button::Button(const std::string& text, const sf::Vector2f& text
 	this->frame.setScale(this->size);
 	
 	set_position({0,0});
-
-};
-
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-float User_Interface::Animator::calculate_frame_duration(int fps, int n_frames) {
-
-	if (fps <= 0) {
-
-		std::cerr << "FPS must be greater than zero." << std::endl;
-		return 0.0f;
-
-	};
-
-	return static_cast<float>(1) / fps;
-
-};
-
-void User_Interface::Animator::update(sf::Sprite& sprite, sf::Texture& texture, const sf::Vector2u& spritesheet_size, const sf::Vector2f& frame_size, const sf::Vector2f& sprite_scale, const float& delta_time) {
-
-	this->elapsed_time += delta_time;
-
-	if (this->elapsed_time >= this->frame_duration) {
-
-		this->elapsed_time -= this->frame_duration;
-		this->current_frame.x++;
-
-		if (this->current_frame.x >= spritesheet_size.x) {
-
-			this->current_frame.x = 0;
-			this->current_frame.y++;
-
-		};
-
-		if (this->current_frame.y >= spritesheet_size.y) {
-
-			this->current_frame.y = 0;
-
-		};
-
-	};
-
-	this->frame_rect.width = frame_size.x;
-	this->frame_rect.height = frame_size.y;
-
-	this->frame_rect.top = this->current_frame.y * this->frame_rect.height;
-	this->frame_rect.left = this->current_frame.x * this->frame_rect.width;
-
-	sprite.setTexture(texture);
-	sprite.setTextureRect(this->frame_rect);
-	sprite.setScale(sprite_scale);
 
 };
 
@@ -273,6 +220,8 @@ void User_Interface::Searchbar::update_page(Page& page) {
 
 void User_Interface::Searchbar::return_to_page(Page& page) {
 
+	this->search_results_page.games.clear();
+
 	this->search_complete = false;
 
 	reset_searching();
@@ -283,7 +232,7 @@ void User_Interface::Searchbar::return_to_page(Page& page) {
 
 };
 
-bool User_Interface::Searchbar::search(const std::vector<Page>& pages) {
+bool User_Interface::Searchbar::search(std::vector<std::unique_ptr<Page>>& pages) {
 
 	this->search_results_page.games.clear();
 
@@ -291,14 +240,16 @@ bool User_Interface::Searchbar::search(const std::vector<Page>& pages) {
 
 	for (auto& page : pages) {
 
-		for (auto& game : page.games) {
+		for (auto& game : page->games) {
 
 			if (Setup::make_lowercase(game->title.text.getString()) == this->inputed_text) {
 
-				this->search_results_page.games.emplace_back(game);/////
+				std::shared_ptr<Button> game_copy = game;
+
+				this->search_results_page.games.emplace_back(std::move(game_copy));/////
 
 				update_page(this->search_results_page);
-
+				this->mouse_wheel_locked = true;
 				this->search_complete = true;
 
 				return true;
@@ -311,11 +262,13 @@ bool User_Interface::Searchbar::search(const std::vector<Page>& pages) {
 
 	for (auto& page : pages) {
 
-		for (auto& game : page.games) {
+		for (auto& game : page->games) {
 
 			if (tolower(game->title.text.getString()[0]) == this->inputed_text[0]) {
 
-				this->search_results_page.games.emplace_back(game);
+				std::shared_ptr<Button> game_copy = game;
+
+				this->search_results_page.games.emplace_back(std::move(game_copy));//////////
 
 			};
 
@@ -326,7 +279,9 @@ bool User_Interface::Searchbar::search(const std::vector<Page>& pages) {
 	if (!this->search_results_page.games.empty()) {
 
 		update_page(this->search_results_page);
+		this->mouse_wheel_locked = true;
 		this->search_complete = true;	
+
 		return true;      
 	
 	}                                        
@@ -339,7 +294,7 @@ bool User_Interface::Searchbar::search(const std::vector<Page>& pages) {
 
 };
 
-void User_Interface::Searchbar::update_buttons(sf::Color& fill_color, sf::Color& outline_color, const sf::Vector2f& mouse_pos) {
+void User_Interface::Searchbar::update_buttons(const sf::Color& fill_color, const sf::Color& outline_color, const sf::Vector2f& mouse_pos) {
 
 	if (this->search_box.contains(mouse_pos)) {
 
@@ -388,7 +343,7 @@ void User_Interface::Searchbar::update_buttons(sf::Color& fill_color, sf::Color&
 
 };
 
-User_Interface::Searchbar::Searchbar(const sf::Font& font, const sf::Color& color) :  search_box("Search", { 0.6, 0.6 }, font, 2), return_button("<<", { 0.6, 0.6 }, font, 2), play_button("PLAY", { 0.6, 0.6 }, font, 2) {
+User_Interface::Searchbar::Searchbar(const sf::Font& font, const sf::Color& color) :  search_box("Search", { 0.6, 0.6 }, font, 2), return_button("<<", {0.6, 0.6}, font, 2), play_button("PLAY", {0.6, 0.6}, font, 2) {
 
 	this->search_box.frame.setOutlineThickness(0.1);
 	this->return_button.frame.setOutlineThickness(0.1);        
@@ -420,23 +375,20 @@ User_Interface::Searchbar::Searchbar(const sf::Font& font, const sf::Color& colo
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-void User_Interface::create_titles() {
+void User_Interface::create_buttons(const Setup& setup_wizard) {
 
 	sf::Vector2f text_scale = { 0.9, 0.9 };
 
-	int i = 0;
-	for (auto& game : this->setup_wizard.game_library) {
+	//int i = 0;
+	for (auto& game : setup_wizard.game_library) {
 
-		this->games_collection.emplace_back(std::make_shared<Button>(game->title, text_scale, this->font, 2));
-		this->games_collection[this->games_collection.size() - 1]->title.index = i;
-
-		++i;
+		this->games_collection.emplace_back(std::make_shared<Button>(game.title, text_scale, this->font, 2, game.game_path, game.game_background_path, sf::Vector2u(10, 25)));
 
 	};
 
 };
 
-void User_Interface::calculate_n_titles_on_screen() {
+void User_Interface::initialize_buttons() {
 
 	//this title_area takes the space needed for each title as double its width inorder to makeup for the bounding box and spacing between titles, and the length as the whole
 	//horizontal space where this title exists since we want our titles to be listed as one column and not stuffed in every available space on the screen.
@@ -452,7 +404,7 @@ void User_Interface::calculate_n_titles_on_screen() {
 	int index = 0;
 	while (true) {
 
-		Page page;
+		std::unique_ptr<Page> page = std::make_unique<Page>();
 
 		int page_size;
 
@@ -473,11 +425,12 @@ void User_Interface::calculate_n_titles_on_screen() {
 
 			this->games_collection[i]->set_position({ 10, 0});
 
-			page.games.emplace_back(this->games_collection[i]);////
+			page->games.emplace_back(std::move(this->games_collection[i]));////
+			page->games[page->games.size() - 1]->title.index = page->games.size() - 1;
 
 		};
 
-		this->pages.emplace_back(page);///
+		this->pages.emplace_back(std::move(page));///
 
 		index += page_size;
 
@@ -497,7 +450,7 @@ void User_Interface::initialize_pages() {
 
 	for (auto& page : this->pages) {
 
-		this->searchbar.update_page(this->pages[this->page_number]);
+		this->searchbar.update_page(*this->pages[this->page_number]);
 
 		this->page_number += 1;
 
@@ -505,7 +458,7 @@ void User_Interface::initialize_pages() {
 
 	this->page_number = 0;
 
-	this->searchbar.update_page(this->pages[this->page_number]);
+	this->searchbar.update_page(*this->pages[this->page_number]);
 
 };
 
@@ -515,12 +468,12 @@ void User_Interface::update_buttons(Page& page, const sf::Vector2f& mouse_pos) {
 
 		if (game->contains(mouse_pos)) {
 
-			game->turn_on(this->box_color, this->chosen_outline_color, this->last_hovered_over_title);
+			game->turn_on(this->box_color, this->chosen_outline_color);
 
 			break;
 
 		}
-		else if (!game->contains(mouse_pos) && !game->title.is_selected && game->title.is_hovered_over == true) {
+		else if (!game->contains(mouse_pos) && !game->title.is_selected && game->title.is_hovered_over) {
 
 			game->turn_off();
 
@@ -554,7 +507,7 @@ void User_Interface::hover_over_buttons() {
 
 			else {
 
-				update_buttons(this->pages[this->page_number], mouse_pos);
+				update_buttons(*this->pages[this->page_number], mouse_pos);
 
 			}//mouse hovering function on all standard pages
 
@@ -596,7 +549,7 @@ void User_Interface::select_game(Button& game) {
 
 	this->last_selected_title = game.title.index;
 
-	game.turn_on(this->box_color, this->chosen_outline_color, this->last_hovered_over_title);
+	game.turn_on(this->box_color, this->chosen_outline_color);
 
 	this->searchbar.play_button.frame.setScale(this->searchbar.play_button.size.x, game.size.y);
 	this->searchbar.play_button.stick_to(game);
@@ -605,33 +558,21 @@ void User_Interface::select_game(Button& game) {
 
 };
 
-void User_Interface::unselect_games() {
+void User_Interface::unselect_games(Page& page) {
 
-	for (auto& page : this->pages) {
+	for (auto& game : page.games) {
 
-		for (auto& game : page.games) {
+		if (game->title.is_selected) {
 
-			if (game->title.is_selected) {
+			game->turn_off();
+			this->display_game_background.store(false);
+			game->title.is_selected = false;
 
-				game->turn_off();
-				this->display_game_background.store(false);
-				game->title.is_selected = false;
+			break;
 
-				break;
+		};
 
-			};
-
-		};//games on page loop
-
-	};//pages loop
-
-};
-
-void User_Interface::launch_game(const Button& game) {
-
-	std::string game_title = game.title.text.getString();
-
-	this->setup_wizard.start_game(game_title);
+	};//games on page loop
 
 };
 
@@ -641,14 +582,15 @@ void User_Interface::clicking_on_game(Page& page) {
 
 		if (game->title.is_selected && this->searchbar.play_selected) {
 
-			launch_game(*game);
+			game->executable.launch();
 
 			return;
 
 		}//launches the game after clicking on play
+
 		else if (!game->title.is_selected && game->title.is_hovered_over) {
 
-			unselect_games();
+			unselect_games(page);
 
 			select_game(*game);
 
@@ -656,15 +598,15 @@ void User_Interface::clicking_on_game(Page& page) {
 
 		}//selects the game if the mouse was clicked over this game and said game was not already selected
 
-		//else if (game.title.is_selected && game.title.is_hovered_over) {
+		//else if (game->title.is_selected && game->title.is_hovered_over) {
 
-		//    return;
+		//	return;
 
-		//};//checks if game is already selected and mouse is over it so i wont do anything, this is incase of useless clicks over an already selected game
+		//}//checks if game is already selected and mouse is over it so i wont do anything, this is incase of useless clicks over an already selected game
 
 	};
 
-	unselect_games();//unselects everything if the mouse was clicked one the screen but not on any game title
+	unselect_games(page);//unselects everything if the mouse was clicked one the screen but not on any game title
 
 };
 
@@ -672,7 +614,7 @@ void User_Interface::select() {
 
 	if (this->searchbar.return_selected) {
 
-		this->searchbar.return_to_page(this->pages[this->page_number]);
+		this->searchbar.return_to_page(*this->pages[this->page_number]);
 
 		return;
 
@@ -711,7 +653,7 @@ void User_Interface::select() {
 	}                                             
 	else {
 
-		clicking_on_game(this->pages[this->page_number]);
+		clicking_on_game(*this->pages[this->page_number]);
 
 	};
 
@@ -723,16 +665,22 @@ void User_Interface::UPDATE(const sf::Event& my_event) {
 
 		if (my_event.mouseWheelScroll.delta >= 0 && this->page_number > 0) {
 
+			this->display_game_background.store(false);
+			unselect_games(*this->pages[this->page_number]);
+			
 			this->page_number -= 1;
+			this->searchbar.update_page(*this->pages[this->page_number]);
 
 		}
 		else if (my_event.mouseWheelScroll.delta < 0 && this->page_number < this->pages.size() - 1) {
+			
+			this->display_game_background.store(false);
+			unselect_games(*this->pages[this->page_number]);
 
 			this->page_number += 1;
+			this->searchbar.update_page(*this->pages[this->page_number]);
 
 		};
-
-		this->searchbar.update_page(this->pages[this->page_number]);
 
 	}
 	else if (sf::Mouse::isButtonPressed(sf::Mouse::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
@@ -750,14 +698,14 @@ void User_Interface::UPDATE(const sf::Event& my_event) {
 
 };
 
-void User_Interface::render_background(Setup::Background& background, const float delta_time, sf::RenderWindow* window) {
+void User_Interface::render_background(const Spritesheet& background, const float delta_time, sf::RenderWindow* window) {
 
-	this->animator.update(this->rendered_sprite, background.texture, background.spritesheet_size, background.frame_size, background.sprite_scale, delta_time);
+	this->animator.update(this->rendered_sprite, background.texture, background.size, background.frame_size, background.sprite_scale, delta_time);
 	window->draw(this->rendered_sprite);
 
 };
 
-void User_Interface::render_buttons(Page& page, sf::RenderWindow* window) {
+void User_Interface::render_buttons(const Page& page, sf::RenderWindow* window) {
 
 	for (auto& game : page.games) {
 
@@ -781,18 +729,18 @@ void User_Interface::render_buttons(Page& page, sf::RenderWindow* window) {
 
 void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 
+	thread_lock.lock();
+
 	if (this->display_game_background) {
 
-		render_background(this->setup_wizard.game_library[this->last_selected_title]->background, delta_time, window);
+		render_background(this->pages[this->page_number]->games[this->last_selected_title]->image, delta_time, window);
 
 	}
 	else {
 
-		render_background(this->setup_wizard.main_background, delta_time, window);
+		render_background(this->menu_background, delta_time, window);
 
 	};
-	
-	thread_lock.lock();
 
 	if (this->searchbar.search_complete) {
 
@@ -805,7 +753,7 @@ void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 	}
 	else {
 
-		render_buttons(this->pages[this->page_number], window);
+		render_buttons(*this->pages[this->page_number], window);
 
 	};
 
@@ -819,18 +767,22 @@ void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 
 };
 
-User_Interface::User_Interface(sf::RenderWindow* window) : searchbar(searchbar) {
+User_Interface::User_Interface(const sf::RenderWindow* window) : searchbar(searchbar), menu_background(menu_background), loading_screen(loading_screen) {
 
 	set_window(window);
+	this->font.loadFromFile("resources\\Montserrat-SemiBold.otf");
+	this->searchbar = Searchbar(this->font, this->box_color);
+
 	//draw_splash_screen(this->setup_wizard.splash_screen.image);
 
-	this->font.loadFromFile("resources\\Montserrat-SemiBold.otf");
-	create_titles();
-
-	calculate_n_titles_on_screen();
-
-	this->searchbar = Searchbar(this->font, this->box_color);
-	this->searchbar.play_button.frame.setOutlineThickness(this->games_collection[0]->frame.getOutlineThickness());
+    Setup wizard = Setup();
+	std::cout << "wizard is done" << std::endl;
+	this->menu_background = Spritesheet(wizard.menu_background_path, { 10, 25 });
+	this->loading_screen = Spritesheet(wizard.splash_screen_path, {10, 25});
+	create_buttons(wizard);
+	initialize_buttons();
+	
+	//this->searchbar.play_button.frame.setOutlineThickness(this->games_collection[0]->frame.getOutlineThickness());
 
 	initialize_pages();
 

@@ -133,11 +133,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Executable.cpp" />
     <ClCompile Include="External Gaming Library.cpp" />
     <ClCompile Include="Setup.cpp" />
     <ClCompile Include="User_Interface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="Executable.h" />
     <ClInclude Include="Setup.h" />
     <ClInclude Include="User_Interface.h" />
   </ItemGroup>

@@ -23,45 +23,21 @@ std::string Setup::make_lowercase(const std::string& game_title) {
 
 };
 
-Setup::Background::Background(const std::string& texture_file_path) : spritesheet_size(10, 25) {
-
-	this->texture_path = texture_file_path;
-	this->texture.loadFromFile(this->texture_path);
-	this->texture.setSmooth(true);
-
-	//we have to divide the image Length and Width by the corrosponding row and column number so we can get
-	//the actual width and length of each slide insie the spritesheet
-	this->frame_size.x = this->texture.getSize().x / this->spritesheet_size.x;
-	this->frame_size.y = this->texture.getSize().y / this->spritesheet_size.y;
-
-	this->sprite_scale.x = sf::VideoMode::getDesktopMode().width / (float)this->frame_size.x;
-	this->sprite_scale.y = sf::VideoMode::getDesktopMode().height / (float)this->frame_size.y;
-
-};
-
-std::wstring Setup::Game::create_executable_path(const std::string& game_path) {
-
-	std::wstring exe_path = std::wstring(game_path.begin(), game_path.end());
-
-	return exe_path;
-
-};
-
 Setup::Game::Game(const std::string& game_title, const std::string& game_path, const std::string& texture_file_path) : 
 	
 	title(game_title), 
-	game_path(create_executable_path(game_path)), 
-	background(texture_file_path) {
-	
+	game_path(game_path), 
+	game_background_path(texture_file_path) {
+
 };
 
 void Setup::add_game(const std::string& game_title, const std::string& game_path, const std::string& texture_file_path) {
 
-	this->game_library.emplace_back(std::make_unique<Game>(game_title, game_path, texture_file_path));
+	this->game_library.emplace_back(Game(game_title, game_path, texture_file_path));
 
-	std::cout << this->game_library[this->game_library.size() - 1]->title << " was added from PATH: ";
+	std::cout << this->game_library[this->game_library.size() - 1].title << " was added from PATH: ";
 
-	std::wcout << this->game_library[this->game_library.size() - 1]->game_path << std::endl;
+	std::cout << this->game_library[this->game_library.size() - 1].game_path << std::endl;
 
 };	
 
@@ -81,7 +57,7 @@ void Setup::search_directories_for_executables(const fs::path& main_directory, s
 
 };
 
-void Setup::get_game_information(const fs::path& games_folder, std::vector<fs::path>& folder_paths, std::vector<std::string>& game_names, std::vector<std::string>& image_paths) {
+void Setup::load_information(const fs::path& games_folder, std::vector<fs::path>& folder_paths, std::vector<std::string>& game_names, std::vector<std::string>& image_paths) {
 
 	int i = 0;
 	std::string name;
@@ -163,130 +139,22 @@ void Setup::get_game_information(const fs::path& games_folder, std::vector<fs::p
 void Setup::initialize_library() {
 
 	std::vector<fs::path> folder_paths;
-
 	std::vector<std::string> game_names;
-
 	std::vector<std::string> image_paths;
 
 	fs::path games_folder(this->games_directory);
 
-	get_game_information(games_folder, folder_paths, game_names, image_paths);
+	load_information(games_folder, folder_paths, game_names, image_paths);
 
-	std::string executable_path;
 	for (int i = 0; i < folder_paths.size(); ++i) {	
 
-		for (char c : folder_paths[i].string()) {
-
-			if (c == '\\') {
-
-				executable_path += "\\\\";
-			}
-			else {
-
-				executable_path += c;
-
-			};
-
-		};
-
-		add_game(game_names[i], executable_path, image_paths[i]);
-		executable_path.clear();
+		add_game(game_names[i], folder_paths[i].string(), image_paths[i]);
 
 	};
 
 };
 
-std::wstring Setup::find_game_path(const std::string& game_title) {
-
-	for (auto& game : this->game_library) {
-
-		if (make_lowercase(game_title) == make_lowercase(game->title)) {
-
-			return game->game_path;
-
-		};
-
-	};
-
-	return NULL;
-
-};//find_game_path brackets
-
-void Setup::start_game(const std::string& game_title) {
-
-	LPCTSTR game_path = _wcsdup(find_game_path(game_title).c_str());
-
-	HWND main_window = HWND();
-
-	if (game_path != NULL) {
-
-		LPTSTR command_line = NULL;
-
-		LPSECURITY_ATTRIBUTES process_attributes = NULL;
-
-		LPSECURITY_ATTRIBUTES thread_attributes = NULL;
-
-		BOOL inherit_handles = FALSE;
-
-		DWORD creation_flags = 0;
-
-		LPVOID environment = NULL;
-
-		LPCTSTR current_directory = NULL;
-
-		PROCESS_INFORMATION process_information;
-
-		STARTUPINFO startup_information;
-
-		ZeroMemory(&process_information, sizeof(process_information));
-
-		ZeroMemory(&startup_information, sizeof(startup_information));
-		startup_information.cb = sizeof(startup_information);
-
-		bool success = CreateProcess(
-
-			game_path,
-
-			command_line,
-
-			process_attributes,
-
-			thread_attributes,
-
-			inherit_handles,
-
-			creation_flags,
-
-			environment,
-
-			current_directory,
-
-			&startup_information,
-
-			&process_information
-
-		);
-
-		assert(success);
-
-		CloseHandle(process_information.hThread);
-		//WaitForSingleObject(process_information.hProcess, INFINITE);
-		CloseHandle(process_information.hProcess);
-
-		SetForegroundWindow(main_window);
-
-		delete game_path;
-
-	}
-	else {
-
-		std::cout << "ERROR: couldnt find game\n";
-
-	};//game_path check bracket
-
-};
-
-Setup::Setup() : splash_screen("resources\\ancient_ruins.png"), main_background("resources\\The Witcher 3.png") {
+Setup::Setup() : splash_screen_path("resources\\ancient_ruins.png"), menu_background_path("resources\\The Witcher 3.png") {
 
 	this->games_directory = fs::current_path().root_path().string() + "\Games";
 	this->stock_background_path = "resources\\Geralt_Wine.png";
