@@ -12,25 +12,27 @@ float Animator::calculate_frame_duration(int fps, int n_frames) {
 
 };
 
-void Animator::update(sf::Sprite& sprite, const sf::Texture& texture, const sf::Vector2u& spritesheet_size, const sf::Vector2f& frame_size, const sf::Vector2f& sprite_scale, const float& delta_time) {
+void Animator::update(sf::Sprite& sprite, const sf::Texture& texture, const sf::Vector2u& spritesheet_size, const sf::Vector2f& frame_size, const sf::Vector2f& sprite_scale, sf::Vector2u& current_frame, float& elapsed_time, const float& delta_time) {
 
-	this->elapsed_time += delta_time;
+	elapsed_time += delta_time;
 
-	if (this->elapsed_time >= this->frame_duration) {
+	this->frame_duration = calculate_frame_duration(60, spritesheet_size.x * spritesheet_size.y);
 
-		this->elapsed_time -= this->frame_duration;
-		this->current_frame.x++;
+	if (elapsed_time >= this->frame_duration) {
 
-		if (this->current_frame.x >= spritesheet_size.x) {
+		elapsed_time -= this->frame_duration;
+		current_frame.x++;
 
-			this->current_frame.x = 0;
-			this->current_frame.y++;
+		if (current_frame.x >= spritesheet_size.x) {
+
+			current_frame.x = 0;
+			current_frame.y++;
 
 		};
 
-		if (this->current_frame.y >= spritesheet_size.y) {
+		if (current_frame.y >= spritesheet_size.y) {
 
-			this->current_frame.y = 0;
+			current_frame.y = 0;
 
 		};
 
@@ -39,8 +41,8 @@ void Animator::update(sf::Sprite& sprite, const sf::Texture& texture, const sf::
 	this->frame_rect.width = frame_size.x;
 	this->frame_rect.height = frame_size.y;
 
-	this->frame_rect.top = this->current_frame.y * this->frame_rect.height;
-	this->frame_rect.left = this->current_frame.x * this->frame_rect.width;
+	this->frame_rect.top = current_frame.y * this->frame_rect.height;
+	this->frame_rect.left = current_frame.x * this->frame_rect.width;
 
 	sprite.setTexture(texture);
 	sprite.setTextureRect(this->frame_rect);
@@ -66,10 +68,13 @@ Spritesheet::Spritesheet(const std::string& texture_file_path, const sf::Vector2
 		this->sprite_scale.x = sf::VideoMode::getDesktopMode().width / this->frame_size.x;
 		this->sprite_scale.y = sf::VideoMode::getDesktopMode().height / this->frame_size.y;
 
+		this->elapsed_time = 0.0f;
+		this->current_frame = { 1, 1 };
+
 	}
 	else {
 
-		std::cout << "no path detected, dead Spritesheet object created" << std::endl;
+		std::cout << "no Spritesheet path detected => dead Spritesheet object created" << std::endl;
 
 	};
 

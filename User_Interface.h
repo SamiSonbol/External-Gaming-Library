@@ -112,9 +112,7 @@ public:
 
 	std::mutex thread_lock;
 
-	void set_window(const sf::RenderWindow* window);
-
-	//void draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window);
+	void set_cursor(const sf::RenderWindow* window, const std::string& cursor_icon_path);
 
 	void create_buttons(const Setup& setup_wizard);
 	void initialize_buttons();
@@ -141,7 +139,7 @@ public:
 
 	void UPDATE(const sf::Event& my_event);
 
-	void render_background(const Spritesheet& background, const float delta_time, sf::RenderWindow* window);
+	void render_background(Spritesheet& background, const float delta_time, sf::RenderWindow* window);
 	void render_buttons(const Page& page, sf::RenderWindow* window);
 	void RENDER(const float delta_time, sf::RenderWindow* window);
 

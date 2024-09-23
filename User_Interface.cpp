@@ -1,11 +1,12 @@
 #include "User_Interface.h"
 
-void User_Interface::set_window(const sf::RenderWindow* window) {
+void User_Interface::set_cursor(const sf::RenderWindow* window, const std::string& cursor_icon_path) {
 
-	sf::WindowHandle wHandle;
-	wHandle = window->getSystemHandle();
-	HCURSOR Cursor = LoadCursorFromFile(L"resources\\Kunai.ani");
+	sf::WindowHandle wHandle = window->getSystemHandle();
+
+	HCURSOR Cursor = LoadCursorFromFile(std::wstring(cursor_icon_path.begin(), cursor_icon_path.end()).c_str());
 	SetCursor(Cursor);
+
 	SetClassLongPtr(wHandle, GCLP_HCURSOR, reinterpret_cast<LONG_PTR>(Cursor));
 
 };
@@ -691,9 +692,9 @@ void User_Interface::UPDATE(const sf::Event& my_event) {
 
 };
 
-void User_Interface::render_background(const Spritesheet& background, const float delta_time, sf::RenderWindow* window) {
+void User_Interface::render_background(Spritesheet& background, const float delta_time, sf::RenderWindow* window) {
 
-	this->animator.update(this->rendered_sprite, background.texture, background.size, background.frame_size, background.sprite_scale, delta_time);
+	this->animator.update(this->rendered_sprite, background.texture, background.size, background.frame_size, background.sprite_scale, background.current_frame, background.elapsed_time, delta_time);
 	window->draw(this->rendered_sprite);
 
 };
@@ -762,18 +763,19 @@ void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 
 User_Interface::User_Interface(sf::RenderWindow* window) : searchbar(searchbar), menu_background(menu_background), loading_screen(loading_screen) {
 
-	set_window(window);
+	set_cursor(window, "resources\\Eye.ani");
 	this->font.loadFromFile("resources\\Montserrat-SemiBold.otf");
 	this->searchbar = Searchbar(this->font, this->box_color);
 
     Setup wizard = Setup();
 	this->menu_background = Spritesheet(wizard.menu_background_path, { 10, 25 });
 	this->loading_screen = Spritesheet(wizard.splash_screen_path);
-	render_background(loading_screen, 0, window);
+	render_background(loading_screen, 1, window);
 	window->display();
 	
 	create_buttons(wizard);
 	initialize_buttons();
 	initialize_pages();
+	set_cursor(window, "resources\\Kunai.ani");
 
 };

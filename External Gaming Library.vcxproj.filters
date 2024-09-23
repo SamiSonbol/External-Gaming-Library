@@ -63,6 +63,9 @@
     <None Include="resources\Kunai.ani">
       <Filter>Resource Files\resources</Filter>
     </None>
+    <None Include="resources\Eye.ani">
+      <Filter>Resource Files\resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Montserrat-SemiBold.otf">

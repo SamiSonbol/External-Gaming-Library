@@ -93,7 +93,7 @@ Executable::Executable(const std::string& path) {
 	}
 	else {
 
-		std::cout << "couldnt find path => dead executable created" << std::endl;
+		std::cout << "couldnt find executable path => dead Executable object created" << std::endl;
 
 	};
 
