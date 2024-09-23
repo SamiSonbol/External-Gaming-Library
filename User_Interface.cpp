@@ -10,13 +10,6 @@ void User_Interface::set_window(const sf::RenderWindow* window) {
 
 };
 
-void User_Interface::draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window) {
-
-	window->draw(image);
-	window->display();
-
-};
-
 User_Interface::Title::Title(const std::string& text, const sf::Vector2f& text_scale, const sf::Font& font) : text(text, font){
 
 	this->text.setStyle(sf::Text::Bold);
@@ -382,7 +375,7 @@ void User_Interface::create_buttons(const Setup& setup_wizard) {
 	//int i = 0;
 	for (auto& game : setup_wizard.game_library) {
 
-		this->games_collection.emplace_back(std::make_shared<Button>(game.title, text_scale, this->font, 2, game.game_path, game.game_background_path, sf::Vector2u(10, 25)));
+		this->games_collection.emplace_back(std::make_shared<Button>(game.title, text_scale, this->font, 2, game.game_path, game.image_path, game.image_size));
 
 	};
 
@@ -767,23 +760,20 @@ void User_Interface::RENDER(const float delta_time, sf::RenderWindow* window) {
 
 };
 
-User_Interface::User_Interface(const sf::RenderWindow* window) : searchbar(searchbar), menu_background(menu_background), loading_screen(loading_screen) {
+User_Interface::User_Interface(sf::RenderWindow* window) : searchbar(searchbar), menu_background(menu_background), loading_screen(loading_screen) {
 
 	set_window(window);
 	this->font.loadFromFile("resources\\Montserrat-SemiBold.otf");
 	this->searchbar = Searchbar(this->font, this->box_color);
 
-	//draw_splash_screen(this->setup_wizard.splash_screen.image);
-
     Setup wizard = Setup();
-	std::cout << "wizard is done" << std::endl;
 	this->menu_background = Spritesheet(wizard.menu_background_path, { 10, 25 });
-	this->loading_screen = Spritesheet(wizard.splash_screen_path, {10, 25});
+	this->loading_screen = Spritesheet(wizard.splash_screen_path);
+	render_background(loading_screen, 0, window);
+	window->display();
+	
 	create_buttons(wizard);
 	initialize_buttons();
-	
-	//this->searchbar.play_button.frame.setOutlineThickness(this->games_collection[0]->frame.getOutlineThickness());
-
 	initialize_pages();
 
 };

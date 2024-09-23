@@ -23,17 +23,18 @@ std::string Setup::make_lowercase(const std::string& game_title) {
 
 };
 
-Setup::Game::Game(const std::string& game_title, const std::string& game_path, const std::string& texture_file_path) : 
+Setup::Game::Game(const std::string& game_title, const std::string& game_path, const std::string& image_path, const sf::Vector2u& image_size) : 
 	
 	title(game_title), 
 	game_path(game_path), 
-	game_background_path(texture_file_path) {
+	image_path(image_path),
+    image_size(image_size) {
 
 };
 
-void Setup::add_game(const std::string& game_title, const std::string& game_path, const std::string& texture_file_path) {
+void Setup::add_game(const std::string& game_title, const std::string& game_path, const std::string& image_path, const sf::Vector2u& image_size) {
 
-	this->game_library.emplace_back(Game(game_title, game_path, texture_file_path));
+	this->game_library.emplace_back(Game(game_title, game_path, image_path, image_size));
 
 	std::cout << this->game_library[this->game_library.size() - 1].title << " was added from PATH: ";
 
@@ -57,7 +58,7 @@ void Setup::search_directories_for_executables(const fs::path& main_directory, s
 
 };
 
-void Setup::load_information(const fs::path& games_folder, std::vector<fs::path>& folder_paths, std::vector<std::string>& game_names, std::vector<std::string>& image_paths) {
+void Setup::load_information(const fs::path& games_folder, std::vector<fs::path>& folder_paths, std::vector<std::string>& game_names, std::vector<std::string>& image_paths, std::vector<sf::Vector2u>& image_sizes) {
 
 	int i = 0;
 	std::string name;
@@ -114,12 +115,42 @@ void Setup::load_information(const fs::path& games_folder, std::vector<fs::path>
 
 				background_found = true;
 
-				image_paths.emplace_back(file_path.path().string());
+				std::string image_file = file_path.path().string();
+				image_paths.emplace_back(image_file);
+				std::cout << image_file << std::endl;
 
-				std::cout << file_path.path().string() << std::endl;
+				//looking if there exists a .txt file with the exact name as the .png but with the .txt file extension
+				std::string text_file = image_file.substr(0, image_file.size() - 4) + ".txt";
+				sf::Vector2u image_size(1, 1);
+				if (std::filesystem::exists(text_file)) {
+
+					std::ifstream input(text_file);
+
+					text_file.clear();//reusing "text_file" as a string instead of creating a new string instance
+					while (std::getline(input, text_file)) {
+
+						if (text_file.substr(0, 9) == "n_rows = ") {//checks if this line in the .txt is for rows or columns
+
+							//saving the the rest of the string after the " = " part which is actually a number and turning it into a type int
+							image_size.y = std::stoi(text_file.substr(9, text_file.size() - 1));
+							
+						}
+						else if (text_file.substr(0, 12) == "n_columns = ") {//checks if this line in the .txt is for rows or columns
+
+							//saving the the rest of the string after the " = " part which is actually a number and turning it into a type int
+							image_size.x = std::stoi(text_file.substr(12, text_file.size() - 1));
+
+						};
+
+					};
+					
+					input.close();//closing the file to free up resources
+
+				};
+				image_sizes.emplace_back(image_size);
 
 				break;
-
+				
 			};
 
 		};
@@ -127,6 +158,7 @@ void Setup::load_information(const fs::path& games_folder, std::vector<fs::path>
 		if (!background_found) {
 
 			image_paths.emplace_back(this->stock_background_path);
+			image_sizes.emplace_back(sf::Vector2u(10, 25));
 
 			std::cout << "No Background found in: " << game_paths.parent_path().string() << " => Stock Background image loaded" << std::endl;
 
@@ -141,14 +173,15 @@ void Setup::initialize_library() {
 	std::vector<fs::path> folder_paths;
 	std::vector<std::string> game_names;
 	std::vector<std::string> image_paths;
+	std::vector<sf::Vector2u> image_sizes;
 
 	fs::path games_folder(this->games_directory);
 
-	load_information(games_folder, folder_paths, game_names, image_paths);
+	load_information(games_folder, folder_paths, game_names, image_paths, image_sizes);
 
 	for (int i = 0; i < folder_paths.size(); ++i) {	
 
-		add_game(game_names[i], folder_paths[i].string(), image_paths[i]);
+		add_game(game_names[i], folder_paths[i].string(), image_paths[i], image_sizes[i]);
 
 	};
 

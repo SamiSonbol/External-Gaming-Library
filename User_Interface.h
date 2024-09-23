@@ -108,14 +108,13 @@ public:
 	std::atomic<bool> display_game_background = false;
 	sf::Vector2f last_mouse_pos = { 0, 0 };
 	std::atomic<int> page_number = 0;
-	//int last_hovered_over_title = 0;
 	int last_selected_title = 0;
 
 	std::mutex thread_lock;
 
 	void set_window(const sf::RenderWindow* window);
 
-	void draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window);
+	//void draw_splash_screen(const sf::Sprite& image, sf::RenderWindow* window);
 
 	void create_buttons(const Setup& setup_wizard);
 	void initialize_buttons();
@@ -146,7 +145,7 @@ public:
 	void render_buttons(const Page& page, sf::RenderWindow* window);
 	void RENDER(const float delta_time, sf::RenderWindow* window);
 
-	User_Interface(const sf::RenderWindow* window);
+	User_Interface(sf::RenderWindow* window);
 
 };
 
