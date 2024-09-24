@@ -3,11 +3,9 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <Windows.h>
-#include <filesystem>
 #include <iostream>
 #include <string>
 #include <crtdbg.h>
-#include "Setup.h"
 #include "User_Interface.h"
 
 int main() {

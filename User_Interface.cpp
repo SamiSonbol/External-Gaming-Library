@@ -373,7 +373,6 @@ void User_Interface::create_buttons(const Setup& setup_wizard) {
 
 	sf::Vector2f text_scale = { 0.9, 0.9 };
 
-	//int i = 0;
 	for (auto& game : setup_wizard.game_library) {
 
 		this->games_collection.emplace_back(std::make_shared<Button>(game.title, text_scale, this->font, 2, game.game_path, game.image_path, game.image_size));
