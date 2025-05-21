@@ -1,0 +1,93 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 65,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/External Gaming Library",
+			"paths" : 
+			[
+				"lib/Animation.lib"
+			],
+			"targetId" : "Animation::@6890427a1f51a3e7e1df",
+			"targetIndex" : 0,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/External Gaming Library",
+			"paths" : 
+			[
+				"lib/Executable.lib"
+			],
+			"targetId" : "Executable::@6890427a1f51a3e7e1df",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/External Gaming Library",
+			"paths" : 
+			[
+				"lib/Game_Library.lib"
+			],
+			"targetId" : "Game_Library::@6890427a1f51a3e7e1df",
+			"targetIndex" : 3,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/External Gaming Library",
+			"paths" : 
+			[
+				"lib/Widgets.lib"
+			],
+			"targetId" : "Widgets::@6890427a1f51a3e7e1df",
+			"targetIndex" : 5,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/External Gaming Library",
+			"paths" : 
+			[
+				"lib/User_Interface.lib"
+			],
+			"targetId" : "User_Interface::@6890427a1f51a3e7e1df",
+			"targetIndex" : 4,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

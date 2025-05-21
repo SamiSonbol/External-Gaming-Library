@@ -1,0 +1,106 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-e59cb1039445017533ec.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "External Gaming Library",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Animation::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Animation-Debug-148f435bc5f450c6fdad.json",
+					"name" : "Animation",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Executable::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Executable-Debug-693bb71f81ae2431ad63.json",
+					"name" : "Executable",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "External_Gaming_Library::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-External_Gaming_Library-Debug-14d5bcf82c159822abdb.json",
+					"name" : "External_Gaming_Library",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Game_Library::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Game_Library-Debug-f06da1fb44d15a628d8d.json",
+					"name" : "Game_Library",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "User_Interface::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-User_Interface-Debug-91bcca829838c3d5adb3.json",
+					"name" : "User_Interface",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Widgets::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Widgets-Debug-5056922fc1de3bae5ad5.json",
+					"name" : "Widgets",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/Tools/Libraries/Repositories/External Gaming Library/out/build/x64-Debug",
+		"source" : "E:/Tools/Libraries/Repositories/External Gaming Library"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

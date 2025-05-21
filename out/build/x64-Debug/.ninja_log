@@ -1,0 +1,26 @@
+# ninja log v5
+17	1469	7680251059911182	CMakeFiles/Animation.dir/src/External_Gaming_Library/Animation.cpp.obj	839830450f100d28
+11	1522	7680251060527718	CMakeFiles/Executable.dir/src/External_Gaming_Library/Executable.cpp.obj	e74c09c2ef7661b2
+1470	1536	7680251060678424	lib/Animation.lib	a3c8fb022bd11a63
+16	1744	7694947324472729	CMakeFiles/Game_Library.dir/src/External_Gaming_Library/Game_Library.cpp.obj	d429718dac934727
+1522	1577	7680251061072540	lib/Executable.lib	cecfcefc482b1d49
+19	1524	7694949093356100	CMakeFiles/Widgets.dir/src/External_Gaming_Library/Widgets.cpp.obj	29150d3cb12f2bf7
+21	1676	7694947324075216	CMakeFiles/External_Gaming_Library.dir/src/External_Gaming_Library/Main.cpp.obj	274a739a5dd2d4a2
+1525	1597	7694949093827947	lib/Widgets.lib	55cae932da2a530e
+17	1545	7694954253160543	CMakeFiles/User_Interface.dir/src/External_Gaming_Library/User_Interface.cpp.obj	a92f03ff2412a1b9
+1745	1804	7694947325309721	lib/Game_Library.lib	16b2c6cdb7e8c42a
+1545	1597	7694954253788912	lib/User_Interface.lib	391a95f04718270b
+47	118	0	clean	8c45b54705a541e8
+1597	1947	7694954255846978	bin/External_Gaming_Library.exe	8d27d5f12fe2bef5
+4	2033	7694960519764182	CMakeFiles/Executable.dir/src/External_Gaming_Library/Executable.cpp.obj	e74c09c2ef7661b2
+9	2044	7694960519764182	CMakeFiles/Animation.dir/src/External_Gaming_Library/Animation.cpp.obj	839830450f100d28
+2033	2102	7694960520393594	lib/Executable.lib	cecfcefc482b1d49
+2044	2102	7694960520393594	lib/Animation.lib	a3c8fb022bd11a63
+16	2456	7694960523936844	CMakeFiles/Game_Library.dir/src/External_Gaming_Library/Game_Library.cpp.obj	d429718dac934727
+34	2465	7694960523936844	CMakeFiles/External_Gaming_Library.dir/src/External_Gaming_Library/Main.cpp.obj	274a739a5dd2d4a2
+22	2467	7694960524014668	CMakeFiles/Widgets.dir/src/External_Gaming_Library/Widgets.cpp.obj	29150d3cb12f2bf7
+2456	2534	7694960524645025	lib/Game_Library.lib	16b2c6cdb7e8c42a
+2467	2540	7694960524805827	lib/Widgets.lib	55cae932da2a530e
+27	2546	7694960524805827	CMakeFiles/User_Interface.dir/src/External_Gaming_Library/User_Interface.cpp.obj	a92f03ff2412a1b9
+2546	2597	7694960525435799	lib/User_Interface.lib	391a95f04718270b
+2597	4673	7694960543856446	bin/External_Gaming_Library.exe	8d27d5f12fe2bef5
